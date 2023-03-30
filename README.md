@@ -1,1 +1,2 @@
-# servirka2
+# speechcloud-servirka
+Example dialog manager for SpeechCloud platform

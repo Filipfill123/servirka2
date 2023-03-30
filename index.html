@@ -1,0 +1,227 @@
+<html>
+  <head>
+      <meta charset="UTF-8">
+  </head>
+  <body>
+     
+    <button id="send_message_empty"><img src="https://aux.iconspalace.com/uploads/1697641958429597199.png"></button>
+    <p>
+    <button id="dialog_restart">Testing dialog</button>
+    <button id="dialog_stop">Testing2 dialog</button>
+    <p>
+
+    <div id="log"></div>
+
+    <div id="doc" style="width: 40%; min-width: 40%; height: 100%; position: absolute; top: 0px; right: 0px"></div>
+
+
+    <audio id="audioout"></audio>
+
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://cak.zcu.cz:9444/speechcloud.js"></script>
+    <script src="require.js"></script>
+
+    <style>
+        body {
+            font-family: verdana, helvetica;
+        }
+
+        #form {
+            display: none;
+        }
+
+        #form input[type=text] {
+            border-radius: 6px;
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+        }
+
+        .embedded {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .center {
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+            padding: 10px;
+        }
+        .flex-container {
+            height: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+        }
+    </style>
+<script>
+
+// SIP session, tj. hovor
+var session;
+
+// Výchozí URI, odkud se stáhne konfigurace ASR+TTS
+var SPEECHCLOUD_URI = " https://cak.zcu.cz:9443/v1/speechcloud/F54AC144-8AE0-4315-98B0-B47C4CA1B580";
+var SPEECHCLOUD_DEFAULT_APP_ID = "numbers";
+
+// Proměnná pro udržení odkazu na řídící WebSocket
+var SPEECHCLOUD_WS = null;
+
+/* Výběr prvků z pole */
+function choose(choices) {
+  var index = Math.floor(Math.random() * choices.length); return choices[index];
+}
+
+/* Logovací funkce */
+function hlog(text) {
+    $("#log").prepend("<div>"+text+"<br/></div>");
+}
+
+
+$( document ).ready(function() {
+
+    $("#send_message_empty").click(function () {
+        data = {};
+        speechCloud.dm_send_message({data: data});
+    });
+
+    /* Stavová proměnná a funkce pro spuštění/pozastavení rozpoznávání */
+    var recognizing = false;
+
+    function do_recognize() {
+        if (!recognizing) {
+            speechCloud.asr_recognize();
+            recognizing = true;
+            hlog("<i><small>ASR start</small></i>")
+        };
+    }
+
+    function do_pause() {
+        if (recognizing) {
+            speechCloud.asr_pause();
+            recognizing = false;
+            hlog("<i><small>ASR stop</small></i>")
+        }
+    }
+
+    /* Přerušení syntézy zasláním zprávy tts_stop */
+    function do_tts_stop() {
+        console.log("Sending tts_stop");
+        speechCloud.tts_stop();
+    }
+
+    /* Syntéza řeči */
+    function do_tts(text, voice) {
+        speechCloud.tts_synthesize({
+            text: text,
+            voice: voice
+        });
+    }
+
+    /* Obsluha tlačítka Restart dialog */
+    $("#dialog_restart").click(function () {
+        location.reload(true);
+    });
+
+    /* Obsluha tlačítka Stop dialog*/
+    $("#dialog_stop").click(function () {
+        hlog("<b>Konec dialogu</b>");
+        speechCloud.terminate();
+    });
+
+    var ignore_space = false;
+    /* Po stisk mezerníku je totéž jako stisknutí tlačítka #send_message_empty */
+    $(window).keydown(function(evt) {
+        if (ignore_space) return;
+
+        if (evt.keyCode == 32) {
+            evt.preventDefault();
+        };
+    });
+
+    $(window).keyup(function(evt) {
+        if (ignore_space) return;
+
+        if (evt.keyCode == 32) {
+            setTimeout(function () {$("#send_message_empty").click()}, 100);
+            evt.preventDefault();
+        };
+    });
+
+    /* Proměnná, do které se uloží timeout pro SIP zavolání */
+    var call_timeout = null;
+
+    var model_uri = " https://cak.zcu.cz:9443/v1/speechcloud/F54AC144-8AE0-4315-98B0-B47C4CA1B580"
+    var options = {
+        uri: model_uri,
+        tts: "#audioout",
+        disable_audio_processing: true
+    }
+
+    var speechCloud = new SpeechCloud(options);
+
+    window.speechCloud = speechCloud
+
+    var nabidka = {
+            "pivo": "49,-",
+            "whisky": "89,-",
+            "rum": "65,-",
+            "víno": "60,-",
+        }
+    speechCloud.on('_ws_session', function () {
+        hlog('Až budete chtít odejít, řeknětě "<i>nashledanou</i>".')
+        hlog('Až budete chtít zaplatit, řeknětě "<i>zaplatím</i>".')
+        
+        html = "<table cellspacing=15px><tr><th>Produkt</th><th>Cena</th></tr>";
+        for(var key in nabidka) {
+            var value = nabidka[key];
+            html += "<tr><td>"+key+"</td><td>"+value+"</td></tr>";
+                }
+        html += "</table>";
+        hlog(html)
+        hlog('Můžete si objednat z nabídky: ')
+        hlog('Stisknutím ikony servírky zavoláte obsluhu.')
+        hlog('\n')
+        hlog('<b>Vítejte v naší FAV hospodě!');
+        hlog('\n')
+        
+    });
+    speechCloud.on('asr_ready', function () {
+        hlog('Servírka je připravena přijmout Vaši objednávku.')
+        hlog('<b>--------------------------------------------------------------</b>')
+        hlog('\n')
+    });
+
+    /* Při příchodu ASR výsledku */
+    speechCloud.on('asr_result', function (msg) {
+        if (msg.partial_result) {
+            return;
+        }
+        if(msg.result == ""){
+            return;
+        }
+        hlog("<b>Rozpoznáno: </b>" + msg.result);
+        hlog("\n");
+        console.log("Result ASR", msg);
+
+    });
+    speechCloud.on('dm_display', function(msg){
+        console.log(msg)
+        hlog("<b>Obsluha: </b>" + msg.text);
+        hlog("\n");
+        console.log("Result DM", msg)
+    });
+
+
+    
+    speechCloud.init();
+
+});
+
+</script> 
+
+  </body>
+</html>
+

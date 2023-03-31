@@ -15,7 +15,9 @@ class Mocniny(Dialog):
         while True:
             #self.sc.led_breath_slow()
             message = await self.sc.dm_send_message()
-            logging.info(msg=message)
+            number = message.data.number
+            print(message)
+            logging.info(msg=number)
             #self.sc.led_off()
 
 

@@ -86,6 +86,12 @@ $( document ).ready(function() {
         speechCloud.dm_send_message({data: data});
     });
 
+    $("#send_number").click(function () {
+        data = {number: document.getElementById("number_to_calculate").value}
+        speechCloud.dm_send_message({data: data});
+        document.getElementById("number_to_calculate").value = 0
+        
+    });
     /* Stavová proměnná a funkce pro spuštění/pozastavení rozpoznávání */
     var recognizing = false;
 

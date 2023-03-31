@@ -13,7 +13,7 @@ setuptools.setup(
     author="Jan Švec",
     author_email="honzas@ntis.zcu.cz",
     description="Example dialog manager for SpeechCloud platform",
-    url="https://github.com/honzas83/speechcloud-servirka",
+    url="https://github.com/Filipfill123/servirka2",
     data_files=[("static", ["index.html"])],
     py_modules=["servirka"],
     python_requires='>=3.7',

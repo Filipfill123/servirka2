@@ -62,7 +62,7 @@
 var session;
 
 // Výchozí URI, odkud se stáhne konfigurace ASR+TTS
-var SPEECHCLOUD_URI = " https://cak.zcu.cz:9443/v1/speechcloud/F54AC144-8AE0-4315-98B0-B47C4CA1B580";
+var SPEECHCLOUD_URI = " https://cak.zcu.cz:9443/v1/speechcloud/devel_polakf_mocninypy";
 var SPEECHCLOUD_DEFAULT_APP_ID = "numbers";
 
 // Proměnná pro udržení odkazu na řídící WebSocket
@@ -152,7 +152,7 @@ $( document ).ready(function() {
     /* Proměnná, do které se uloží timeout pro SIP zavolání */
     var call_timeout = null;
 
-    var model_uri = " https://cak.zcu.cz:9443/v1/speechcloud/mocninypy"
+    var model_uri = " https://cak.zcu.cz:9443/v1/speechcloud/devel_polakf_mocninypy"
     var options = {
         uri: model_uri,
         tts: "#audioout",

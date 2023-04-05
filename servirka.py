@@ -15,9 +15,9 @@ class Mocniny(Dialog):
         while True:
             #self.sc.led_breath_slow()
             message = await self.sc.dm_send_message()
-            logging.info(msg=len(message))
-            if message == {}:
-                number = int(message["data"]["number"])
+            data = message["data"]
+            if data:
+                number = int(data["number"])
                 number_squared = str(number*number)
                 await self.synthesize_and_wait(text=number_squared, voice=HLAS)
                 #logging.info(msg=number)

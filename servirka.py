@@ -15,13 +15,11 @@ class Mocniny(Dialog):
         while True:
             #self.sc.led_breath_slow()
             message = await self.sc.dm_send_message()
-            print("message: ", message)
-            if message:
+            if len(message) > 0:
                 number = int(message["data"]["number"])
-                print("number: ", number)
                 number_squared = str(number*number)
                 await self.synthesize_and_wait(text=number_squared, voice=HLAS)
-                logging.info(msg=number)
+                #logging.info(msg=number)
             else: 
                 await self.synthesize_and_wait(text="Slyším a poslouchám.", voice=HLAS)
             #self.sc.led_off()

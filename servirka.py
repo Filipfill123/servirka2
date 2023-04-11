@@ -11,7 +11,7 @@ class Mocniny(Dialog):
         HLAS = "Iva30"
 
 
-        await self.synthesize_and_wait(text="Dobrý den, jsem vaše virtuální mocnina Karel. Zadejte číslo.", voice=HLAS)
+        await self.synthesize_and_wait(text="Dobrý den, jsem vaše virtuální mocnina Karel. Zadejte číslo pro mocnění, nebo můžete stisknout otazník, abyste věděli, jestli Vás poslouchám.", voice=HLAS)
         while True:
             #self.sc.led_breath_slow()
             message = await self.sc.dm_send_message()

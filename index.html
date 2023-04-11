@@ -4,12 +4,16 @@
   </head>
   <body>
      
-    <button id="send_message_empty"><img src="https://aux.iconspalace.com/uploads/1697641958429597199.png"></button>
-    <p>
+    <div class="imgDiv">
+        <button id="send_message_empty"><img src="https://upload.wikimedia.org/wikipedia/en/5/5a/Black_question_mark.png"></button>
+    </div>
+    <div class="inputDiv">
+        
     <label for="number_to_calculate">Zadejte číslo:</label>
     <input type="number" id="number_to_calculate" name="number_to_calculate" required
-            min="0" max="1000">
+        min="0" max="1000">
     <button id="send_number">Mocni jako ďábel</button>
+    </div>    
 
     <div id="doc" style="width: 40%; min-width: 40%; height: 100%; position: absolute; top: 0px; right: 0px"></div>
 
@@ -21,39 +25,26 @@
     <script src="require.js"></script>
 
     <style>
+        img {
+            border-radius: 15px; 
+            width: 250px;
+        }
         body {
-            font-family: verdana, helvetica;
+            display: block;
+            align-items: center;
+            justify-content: center;
+            margin-top: 35px;
         }
-
-        #form {
-            display: none;
+        .imgDiv {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        #form input[type=text] {
-            border-radius: 6px;
-            -moz-border-radius: 6px;
-            -webkit-border-radius: 6px;
-        }
-
-        .embedded {
-            margin: 0px;
-            padding: 0px;
-        }
-
-        .center {
-            margin-left: auto;
-            margin-right: auto;
-            width: 50%;
-            padding: 10px;
-        }
-        .flex-container {
-            height: 100%;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+        .inputDiv {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 <script>

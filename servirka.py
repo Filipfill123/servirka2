@@ -18,12 +18,12 @@ class Mocniny(Dialog):
             data = message["data"]
             if data:
                 result = data["result"]
-                if result in dict_of_numbers.keys:
+                if result in dict_of_numbers.keys():
                     number = dict_of_numbers[result]
                     number_squared = str(number*number)
                     await self.synthesize_and_wait(text=f'Druhá mocnina čísla {number} je {number_squared}', voice=HLAS)
                     #logging.info(msg=number)
-                elif result in dict_of_numbers.values:
+                elif result in dict_of_numbers.values():
                     number = result
                     number_squared = str(number*number)
                     await self.synthesize_and_wait(text=f'Druhá mocnina čísla {number} je {number_squared}', voice=HLAS)

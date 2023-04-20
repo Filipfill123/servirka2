@@ -24,7 +24,7 @@ class Mocniny(Dialog):
                     await self.synthesize_and_wait(text=f'Druhá mocnina čísla {number} je {number_squared}', voice=HLAS)
                     #logging.info(msg=number)
                 elif int(result) in dict_of_numbers.values():
-                    number = result
+                    number = int(result)
                     number_squared = str(number*number)
                     await self.synthesize_and_wait(text=f'Druhá mocnina čísla {number} je {number_squared}', voice=HLAS)
                 else:

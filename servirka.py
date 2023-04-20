@@ -17,7 +17,7 @@ class Mocniny(Dialog):
             message = await self.sc.dm_send_message()
             data = message["data"]
             if data:
-                result = int(data["result"])
+                result = data["result"]
                 if result in dict_of_numbers.keys:
                     number = dict_of_numbers[result]
                     number_squared = str(number*number)

@@ -1,9 +1,9 @@
 <html>
   <head>
       <meta charset="UTF-8">
+      <link rel="stylesheet" href="style.css">
   </head>
   <body>
-     
     <div class="imgDiv">
         <button id="send_message_empty"><img src="https://upload.wikimedia.org/wikipedia/en/5/5a/Black_question_mark.png"></button>
     </div>
@@ -11,19 +11,20 @@
         
     <label for="number_to_calculate">Zadejte číslo:</label>
     <input type="number" id="number_to_calculate" name="number_to_calculate" required
-        min="0" max="1000">
-    <button id="send_number">Mocni jako ďábel</button>
-    </div>    
-
-    <div id="doc" style="width: 40%; min-width: 40%; height: 100%; position: absolute; top: 0px; right: 0px"></div>
-
+        min="0" max="1000" value="0">
+    <button style="margin: 0px 25px 0px 5px;" id="send_number">Mocni jako ďábel</button>
+    <button style="margin: 0px 15px 0px 15px;" id="asr_start_stop">Start ASR</button>
+    <p>Mic: <span id="asr_signal">0%</p>
+    <span id="recognizeSpan" class="dot"></span>
+    </div>
+    <p>
+    <div id="log" style="display: flex; align-items: center; flex-direction: column-reverse; "></div>    
 
     <audio id="audioout"></audio>
 
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="https://cak.zcu.cz:9444/speechcloud.js"></script>
     <script src="require.js"></script>
-
     <style>
         img {
             border-radius: 15px; 
@@ -46,6 +47,14 @@
             align-items: center;
             justify-content: center;
         }
+        .dot {
+            height: 40px;
+            width: 40px;
+            margin-left: 15px;
+            background-color: red;
+            border-radius: 50%;
+            display: inline-block
+        }
     </style>
 <script>
 
@@ -53,7 +62,7 @@
 var session;
 
 // Výchozí URI, odkud se stáhne konfigurace ASR+TTS
-var SPEECHCLOUD_URI = " https://cak.zcu.cz:9443/v1/speechcloud/devel_polakf_mocninypy";
+var SPEECHCLOUD_URI = " https://cak.zcu.cz:9443/v1/speechcloud/devel_polakf_mocniny";
 var SPEECHCLOUD_DEFAULT_APP_ID = "numbers";
 
 // Proměnná pro udržení odkazu na řídící WebSocket
@@ -64,13 +73,11 @@ function choose(choices) {
   var index = Math.floor(Math.random() * choices.length); return choices[index];
 }
 
-/* Logovací funkce */
-// function hlog(text) {
-//     $("#log").prepend("<div>"+text+"<br/></div>");
-// }
-
 
 $( document ).ready(function() {
+    var button_value = "Start ASR"
+
+    var dict_of_numbers = {"jedna":1, "dva": 2, "tři": 3, "čtyři": 4, "pět": 5, "šest": 6, "sedm": 7, "osm": 8, "devět": 9, "deset": 10}
 
     $("#send_message_empty").click(function () {
         data = {};
@@ -78,19 +85,42 @@ $( document ).ready(function() {
     });
 
     $("#send_number").click(function () {
-        data = {number: document.getElementById("number_to_calculate").value}
-        speechCloud.dm_send_message({data: data});
         document.getElementById("number_to_calculate").value = 0
-        
+        data = {"result": document.getElementById("number_to_calculate").value};
+        speechCloud.dm_send_message({data: data});
     });
+
+    $("#asr_start_stop").click(function () {
+        if (recognizing){
+            console.log("pausing ASR")
+            var btn = document.getElementById("asr_start_stop")
+            btn.textContent = "Start ASR"
+            do_pause()
+        }
+        else if (!recognizing){
+            console.log("starting ASR")
+            var btn = document.getElementById("asr_start_stop")
+            btn.textContent = "Stop ASR"
+            do_recognize()
+        }
+    });
+
     /* Stavová proměnná a funkce pro spuštění/pozastavení rozpoznávání */
     var recognizing = false;
+    var listening = false;
+
+    /* Logovací funkce */
+    function hlog(text) {
+        $("#log").prepend("<div>"+text+"<br/></div>");
+        }
+
 
     function do_recognize() {
         if (!recognizing) {
             speechCloud.asr_recognize();
             recognizing = true;
-            hlog("<i><small>ASR start</small></i>")
+            document.getElementById("recognizeSpan").style.backgroundColor = "green"
+            // document.getElementById("recognizeSpan").style.backgroundColor = "green"
         };
     }
 
@@ -98,7 +128,8 @@ $( document ).ready(function() {
         if (recognizing) {
             speechCloud.asr_pause();
             recognizing = false;
-            hlog("<i><small>ASR stop</small></i>")
+            document.getElementById("recognizeSpan").style.backgroundColor = "red"
+            // document.getElementById("recognizeSpan").style.backgroundColor = "red"
         }
     }
 
@@ -110,6 +141,7 @@ $( document ).ready(function() {
 
     /* Syntéza řeči */
     function do_tts(text, voice) {
+        console.log("doing tts: ", text, voice)
         speechCloud.tts_synthesize({
             text: text,
             voice: voice
@@ -123,7 +155,6 @@ $( document ).ready(function() {
 
     /* Obsluha tlačítka Stop dialog*/
     $("#dialog_stop").click(function () {
-        hlog("<b>Konec dialogu</b>");
         speechCloud.terminate();
     });
 
@@ -160,26 +191,50 @@ $( document ).ready(function() {
 
     window.speechCloud = speechCloud
 
+   
     speechCloud.on('_ws_session', function () {
         console.log("ws connected")
+        hlog("<b>Hello :)</b>");
+        hlog("\n");
     });
     speechCloud.on('asr_ready', function () {
         console.log("asr ready")
+        hlog("<b>ASR ready</b>");
+        hlog("\n");
+        // do_tts("Dobrý den, jsem vaše virtuální mocnina Karel. Zadejte číslo pro mocnění, nebo můžete stisknout otazník, abyste věděli, jestli Vás poslouchám.", "Iva30")
+        do_tts("Dobrý den. Zadejte číslo od jedné do deseti, nebo zmáčkněte tlačítko ASR a řekněte číslo.", "Iva30")
+        //document.getElementById("recognizeSpan").style.backgroundColor = "green"
     });
 
     /* Při příchodu ASR výsledku */
     speechCloud.on('asr_result', function (msg) {
         if (msg.partial_result) {
+            console.log("ASR message: ", msg)
             return;
         }
         if(msg.result == ""){
             return;
         }
+        else if(msg.result){
+            console.log("ASR message with result: ", msg)
+            data = {"result": msg.result};
+            speechCloud.dm_send_message({data: data});
+            hlog("<b>Rozpoznáno: </b>" + msg.result);
+            hlog("\n");
+            
+        }
 
     });
     speechCloud.on('dm_display', function(msg){
+        console.log(msg)
+    });
 
-        console.log("Result DM", msg)
+    speechCloud.on('asr_signal', function(msg){
+        console.log("ASR signal: ", msg)
+        if(msg.speech){
+            document.getElementById("asr_signal").textContent = Math.round(msg["level"]*10) + "%" 
+        }
+        
     });
 
 

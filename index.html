@@ -87,6 +87,7 @@ $( document ).ready(function() {
     $("#send_number").click(function () {
         data = {"result": document.getElementById("number_to_calculate").value};
         speechCloud.dm_send_message({data: data});
+        document.getElementById("number_to_calculate").value = 0
     });
 
     $("#asr_start_stop").click(function () {

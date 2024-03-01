@@ -1,11 +1,14 @@
 <html>
   <head>
       <meta charset="UTF-8">
+
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
      
     <button id="send_message_empty" style="top: 0; left: 0;"><img src="https://aux.iconspalace.com/uploads/1697641958429597199.png"></button>
-    <div class="microphone" style="top: 0; right: 0;">
+    <div class="microphone" style="top: 0; right: 0; margin: 10px 0px 0px 15px;">
+        <i id="microphone" class="fa fa-microphone" style="font-size:48px;color:rgb(12, 12, 12);"  ></i> 
         <div class="volume-meter"></div>
     </div>
     <p>
@@ -240,9 +243,18 @@ $( document ).ready(function() {
     });
 
     speechCloud.on('asr_signal', function (msg) {
-        const volumeMeter = document.querySelector('.volume-meter');
-        const volume = Math.random() * 100; // Simulate microphone volume (0-100)
-        volumeMeter.style.width = volume + '%';
+        if(msg.speech){
+            document.getElementById("microphone").style.color = "green";
+            const volumeMeter = document.querySelector('.volume-meter');
+            const volume = Math.random() * 100; // Simulate microphone volume (0-100)
+            volumeMeter.style.width = volume + '%';
+            }
+        else{
+            const volumeMeter = document.querySelector('.volume-meter');
+            const volume = 0; // Simulate microphone volume (0-100)
+            volumeMeter.style.width = volume + '%';
+            document.getElementById("microphone").style.color = "gray";
+        }
     });
 
 

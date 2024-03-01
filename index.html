@@ -5,6 +5,7 @@
   <body>
      
     <button id="send_message_empty"><img src="https://aux.iconspalace.com/uploads/1697641958429597199.png"></button>
+    <div class="volume-meter"></div>
     <p>
     <button id="dialog_restart">Restart dialog</button>
     <button id="dialog_stop">Stop dialog</button>
@@ -212,6 +213,12 @@ $( document ).ready(function() {
         hlog("<b>Obsluha: </b>" + msg.text);
         hlog("\n");
         console.log("Result DM", msg)
+    });
+
+    speechCloud.on('asr_signal', function (msg) {
+        const volumeMeter = document.querySelector('.volume-meter');
+        const volume = Math.random() * 100; // Simulate microphone volume (0-100)
+        volumeMeter.style.width = volume + '%';
     });
 
 

@@ -7,9 +7,11 @@
   <body>
      
     <button id="send_message_empty" style="top: 0; left: 0;"><img src="https://aux.iconspalace.com/uploads/1697641958429597199.png"></button>
-    <div class="microphone" style="top: 0; right: 0; margin: 10px 0px 0px 15px;">
-        <div class="volume-meter" style="margin-left: 20px;"></div>
-        <i id="microphone" class="fa fa-microphone" style="font-size:48px;color:rgb(12, 12, 12);"  ></i>
+    <div class="float-container-top-right"> 
+        <div class="microphone" style="margin-left: 10px;">
+            <div class="volume-meter"></div>
+        </div>
+        <i id="microphone" class="fa fa-microphone" style="font-size:48px;color:rgb(12, 12, 12);"  ></i> 
     </div>
     <p>
     <button id="dialog_restart">Restart dialog</button>
@@ -83,6 +85,17 @@
             margin-bottom: 1px;
             margin-right: 10px;
             
+        }
+        
+        .float-container-top-right {
+            /* border: 3px solid #1b0404; */
+            padding-top: 0px;
+            margin-right: 20px;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: justify;
         }
     </style>
 <script>
